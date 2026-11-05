@@ -348,6 +348,30 @@ details.alt[open] summary{margin-bottom:12px}
 @media (max-width:420px){.own{grid-template-columns:1fr}.day{padding:14px}}
 @media (min-width:700px){canvas#scene{height:480px}.panel{padding:26px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── Live code view (free AI assistant page) ── */
+.code{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge2);background:#0B0F17;box-shadow:0 30px 60px -30px rgba(0,0,0,.8),0 0 0 1px rgba(91,140,255,.06);margin:0 0 16px}
+.code-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0F141F;border-bottom:1px solid var(--edge)}
+.code-dots{display:flex;gap:6px}.code-dots i{width:10px;height:10px;border-radius:50%;background:#F97066}.code-dots i:nth-child(2){background:#F5B544}.code-dots i:nth-child(3){background:#3CCB7F}
+.code-title{font-size:12px;color:var(--label3);letter-spacing:.02em;margin-left:auto}
+.code-live{display:inline-flex;align-items:center;gap:6px;font:600 11px Inter,sans-serif;letter-spacing:.08em;color:var(--green)}
+.code-live i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.4s infinite}
+.code-tabs{display:flex;gap:2px;padding:0 8px;background:#0F141F;border-bottom:1px solid var(--edge);overflow-x:auto;scrollbar-width:none}
+.code-tabs::-webkit-scrollbar{display:none}
+.code-tab{font:12px "JetBrains Mono",ui-monospace,monospace;color:var(--label3);padding:9px 12px;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.code-tab b{width:7px;height:7px;border-radius:2px;background:var(--yellow);display:inline-block}
+.code-tab.on{color:var(--label);border-bottom-color:var(--accent);background:#0B0F17}
+.code-tab.done b{background:var(--green)}
+.code-body{display:flex;height:300px;overflow:hidden;font:12.5px/1.75 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.code-gutter{padding:12px 10px 12px 14px;color:#3A4558;text-align:right;user-select:none;min-width:38px}
+.code-text{padding:12px 14px 12px 4px;white-space:pre;color:#D6DEEB;flex:1;overflow:hidden}
+.code-text .k{color:#C792EA}.code-text .s{color:#ECC48D}.code-text .c{color:#637777;font-style:italic}.code-text .f{color:#82AAFF}.code-text .n{color:#F78C6C}.code-text .p{color:#7FDBCA}
+.code-cursor{display:inline-block;width:7px;height:15px;background:var(--accent);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+.code-foot{display:flex;gap:14px;align-items:center;padding:7px 14px;background:#0F141F;border-top:1px solid var(--edge);font:11px "JetBrains Mono",ui-monospace,monospace;color:var(--label3)}
+.code-foot .ok{color:var(--green)}.code-foot span:last-child{margin-left:auto}
+.code-cap{font-size:13px;color:var(--label2);margin:-4px 2px 16px}
+@keyframes blink{50%{opacity:0}}
+@keyframes pulse{50%{opacity:.35}}
 </style>
 </head>
 <body>
@@ -392,6 +416,17 @@ details.alt[open] summary{margin-bottom:12px}
     <div class="err hidden" id="authErr"></div>
   </section>
 
+
+  <!-- Free AI assistant page: the assistant being written, line by line, while the agents build it. -->
+  <section class="hidden" id="codePanel">
+    <div class="code" aria-label="Your assistant being coded live">
+      <div class="code-head"><div class="code-dots"><i></i><i></i><i></i></div><span class="code-live" id="codeLive"><i></i>CODING LIVE</span><span class="code-title" id="codeTitle">smart-reply-engine</span></div>
+      <div class="code-tabs" id="codeTabs"></div>
+      <div class="code-body"><div class="code-gutter" id="codeGutter"></div><div class="code-text" id="codeText"></div></div>
+      <div class="code-foot"><span id="codeState">● Building</span><span>JavaScript</span><span>UTF-8</span><span id="codePos">Ln 1, Col 1</span></div>
+    </div>
+    <p class="code-cap" id="codeCap">This is what happens when you tap Build: your assistant is written for you, live, line by line.</p>
+  </section>
   <div class="seg glass hidden" id="journey"></div>
 
   <section class="stack glass hidden" id="stackPanel">
@@ -1759,7 +1794,12 @@ details.alt[open] summary{margin-bottom:12px}
     vis("compose", !!d.canMessage);
     vis("infoPanel", false);
     vis("infoTg", !web);
-    if (SRE_ONLY) $("buildPanel").querySelector("h2").textContent = "Your free AI Sales Assistant";
+    if (SRE_ONLY) {
+      $("buildPanel").querySelector("h2").textContent = "Your free AI Sales Assistant";
+      if (busy) code.start("live", $("sreName").value.trim() || (d.sre && d.sre.name) || "", d.firstName || "");
+      else if (d.sre && d.sre.chatUrl) { code.start("live", d.sre.name || "", d.firstName || ""); code.finish(); }
+      else code.start("preview", $("sreName").value.trim(), d.firstName || "");
+    }
 
     if (busy) {
       $("hello").innerHTML = "Hi " + name + " — <span>your team is on it</span>";
@@ -1982,6 +2022,117 @@ details.alt[open] summary{margin-bottom:12px}
     try { if (token) localStorage.setItem("eem26-session", token); else localStorage.removeItem("eem26-session"); } catch (e) {}
   }
 
+
+  // ── Live code view (free AI assistant page only) ─────────────────────────────
+  // A typed-out view of the assistant's setup, shown as a preview before sign-up and live while the agents build it.
+  var code = (function () {
+    var timer = null, files = [], fi = 0, ci = 0, mode = "", names = { bot: "", owner: "" };
+    var KW = /\b(import|from|const|new|await|async|return|if|export|true|false)\b/g;
+    function esc2(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function hl(src) {
+      return src.split("\n").map(function (line) {
+        var cut = line.indexOf("//"), rest = "";
+        if (cut >= 0 && (line.slice(0, cut).split('"').length % 2 === 1)) { rest = line.slice(cut); line = line.slice(0, cut); }
+        var out = "", parts = line.split(/("[^"]*"?)/);
+        parts.forEach(function (part, i) {
+          if (i % 2 === 1) { out += '<span class="s">' + esc2(part) + "</span>"; return; }
+          out += esc2(part)
+            .replace(KW, '<span class="k">$1</span>')
+            .replace(/\b(\d+(?:\.\d+)?)(s?)\b/g, '<span class="n">$1$2</span>')
+            .replace(/\b([a-zA-Z_]\w*)(?=\()/g, '<span class="f">$1</span>')
+            .replace(/\b([a-zA-Z_]\w*)(?=:\s)/g, '<span class="p">$1</span>');
+        });
+        return out + (rest ? '<span class="c">' + esc2(rest) + "</span>" : "");
+      }).join("\n");
+    }
+    function build() {
+      var bot = names.bot || "Your Assistant", owner = names.owner || "you";
+      return [
+        { name: "assistant.js", text: [
+          "// Smart Reply Engine, built live for " + owner,
+          'import { SmartReplyEngine } from "@eem26/sre";',
+          "",
+          "const assistant = new SmartReplyEngine({",
+          '  name: "' + bot + '",',
+          '  owner: "' + owner + '",',
+          '  brain: "Claude AI",',
+          '  replyWithin: "3s",',
+          '  available: "24/7",',
+          '  tone: "warm, confident, helpful",',
+          "});"].join("\n") },
+        { name: "knowledge.js", text: [
+          "// Everything it needs to sell for you",
+          "assistant.learn({",
+          '  greeting: "Hi! How can I help you today?",',
+          "  objections: {",
+          '    "It is too expensive": showValueFirst,',
+          '    "Let me think about it": answerEveryDoubt,',
+          '    "Is this real?": shareRealResults,',
+          "  },",
+          '  goal: "guide every chat to payment",',
+          "});"].join("\n") },
+        { name: "replies.js", text: [
+          'assistant.on("message", async (chat) => {',
+          "  const intent = await assistant.understand(chat);",
+          "  if (intent.readyToBuy) {",
+          "    return chat.reply(assistant.paymentLink());",
+          "  }",
+          "  return chat.reply(await assistant.answer(chat));",
+          "});",
+          "",
+          "assistant.goLive(); // replying to buyers, even while you sleep",
+          "",
+          "// Next: connect it to your Selar store, live on Sunday 8PM"].join("\n") }
+      ];
+    }
+    function render() {
+      var f = files[fi], shown = f.text.slice(0, ci), lines = shown.split("\n");
+      $("codeTabs").innerHTML = files.map(function (x, i) {
+        return '<span class="code-tab' + (i === fi ? " on" : "") + (i < fi || (i === fi && ci >= x.text.length) ? " done" : "") + '"><b></b>' + x.name + "</span>";
+      }).join("");
+      $("codeGutter").innerHTML = lines.map(function (_, i) { return i + 1; }).join("<br>");
+      $("codeText").innerHTML = hl(shown) + '<span class="code-cursor"></span>';
+      $("codePos").textContent = "Ln " + lines.length + ", Col " + (lines[lines.length - 1].length + 1);
+      var body = $("codeText").parentNode; body.scrollTop = body.scrollHeight;
+    }
+    function step() {
+      var f = files[fi];
+      if (ci < f.text.length) {
+        var ch = f.text[ci]; ci++;
+        render();
+        timer = setTimeout(step, ch === "\n" ? 140 : ch === " " ? 18 : 26 + Math.random() * 30);
+      } else if (fi < files.length - 1) {
+        timer = setTimeout(function () { fi++; ci = 0; render(); step(); }, 700);
+      } else if (mode === "preview") {
+        timer = setTimeout(function () { fi = 0; ci = 0; step(); }, 3500);
+      } else {
+        $("codeState").innerHTML = '<span class="ok">✓ Live</span>';
+      }
+    }
+    return {
+      start: function (m, bot, owner) {
+        if (mode === m && timer) return;
+        clearTimeout(timer); mode = m; names = { bot: bot || "", owner: owner || "" };
+        files = build(); fi = 0; ci = 0;
+        $("codeState").textContent = "● Building";
+        vis("codeLive", true);
+        $("codeTitle").textContent = (bot ? bot.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "smart-reply-engine");
+        $("codeCap").textContent = m === "preview"
+          ? "This is what happens when you tap Build: your assistant is written for you, live, line by line."
+          : "Your assistant is being written for you right now. Watch every line.";
+        vis("codePanel", true); step();
+      },
+      finish: function () {
+        if (!mode || mode === "done") return;
+        clearTimeout(timer); timer = null; mode = "done";
+        fi = files.length - 1; ci = files[fi].text.length; render();
+        $("codeState").innerHTML = '<span class="ok">✓ Live</span>'; vis("codeLive", false);
+        $("codeCap").textContent = "Done. Your assistant is live and replying.";
+      },
+      hide: function () { clearTimeout(timer); timer = null; mode = ""; vis("codePanel", false); }
+    };
+  })();
+
   // ── Account: sign up, log in, codes ─────────────────────────────────────────
   var codeEmail = "";
   function showAuth(msg) {
@@ -1990,6 +2141,8 @@ details.alt[open] summary{margin-bottom:12px}
     vis("authPanel", true);
     if (SRE_ONLY) {
       $("hello").innerHTML = "Your free <span>AI Sales Assistant</span>";
+      var twoRow = $("upForm").querySelector(".two"); if (twoRow) twoRow.style.display = "none";
+      code.start("preview");
       var certNote = $("upForm").querySelector('label[for="suName"] span'); if (certNote) certNote.textContent = "";
       var phoneLabel = $("upForm").querySelector('label[for="suPhone"]'); if (phoneLabel) phoneLabel.innerHTML = 'WhatsApp number <span style="color:var(--label3)">(optional)</span>';
       var amaraHint = $("upForm").querySelector(".hint"); if (amaraHint) amaraHint.textContent = "Free. No card, no Telegram, no code — it works from your phone.";
@@ -2031,7 +2184,7 @@ details.alt[open] summary{margin-bottom:12px}
   $("tabIn").addEventListener("click", function () { authTab(false); });
   $("suBtn").addEventListener("click", function () {
     authCall($("suBtn"), "Create my account", {
-      action: "signup", name: $("suName").value, email: $("suEmail").value.trim(), phone: $("suPhone").value, country: $("suCountry").value, password: $("suPass").value
+      action: "signup", name: $("suName").value, email: $("suEmail").value.trim(), phone: $("suPhone").value, country: $("suCountry").value || (SRE_ONLY ? "Nigeria" : ""), password: $("suPass").value
     }, function (res) { if (SRE_ONLY) captureLead(); signedIn(res); });
   });
   // On the free AI assistant page, a new account also registers the person for the Sunday training (OmniReach sends
