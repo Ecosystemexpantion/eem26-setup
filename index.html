@@ -364,7 +364,7 @@ details.alt[open] summary{margin-bottom:12px}
 .code-tab.done b{background:var(--green)}
 .code-body{display:flex;height:300px;overflow:hidden;font:12.5px/1.75 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 .code-gutter{padding:12px 10px 12px 14px;color:#3A4558;text-align:right;user-select:none;min-width:38px}
-.code-text{padding:12px 14px 12px 4px;white-space:pre;color:#D6DEEB;flex:1;overflow:hidden}
+.code-text{padding:12px 14px 12px 4px;white-space:pre;color:#D6DEEB;flex:1;overflow:visible;min-width:0}
 .code-text .k{color:#C792EA}.code-text .s{color:#ECC48D}.code-text .c{color:#637777;font-style:italic}.code-text .f{color:#82AAFF}.code-text .n{color:#F78C6C}.code-text .p{color:#7FDBCA}
 .code-cursor{display:inline-block;width:7px;height:15px;background:var(--accent);vertical-align:-3px;animation:blink 1s steps(1) infinite}
 .code-foot{display:flex;gap:14px;align-items:center;padding:7px 14px;background:#0F141F;border-top:1px solid var(--edge);font:11px "JetBrains Mono",ui-monospace,monospace;color:var(--label3)}
@@ -394,6 +394,26 @@ details.alt[open] summary{margin-bottom:12px}
 .done-step .when{display:inline-flex;align-items:center;gap:6px;font:600 12px Inter,sans-serif;letter-spacing:.04em;color:var(--orange);background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:999px;padding:5px 10px;margin-bottom:10px}
 .done-step .btn{width:100%;margin-top:8px}
 .btn.wa{background:#25D366;color:#06210F;box-shadow:0 10px 30px -12px rgba(37,211,102,.6)}
+
+.leave-warn{display:flex;gap:10px;align-items:center;padding:10px 14px;margin:0 0 12px;border-radius:12px;background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--orange);font:600 13px Inter,sans-serif}
+.leave-warn i{font-style:normal;font-size:16px}
+body.sre-building .hero{padding-top:14px;padding-bottom:6px}
+body.sre-building .hero h1{font-size:22px}
+body.sre-building .hero p{display:none}
+body.sre-building .code{margin-bottom:8px}
+body.sre-building .code-body{height:128px;font-size:11.5px;line-height:1.6}
+body.sre-building .code-tabs .code-tab{padding:6px 10px}
+body.sre-building .code-cap{display:none}
+body.sre-building .ai-typing{margin:6px 2px}
+body.sre-building .kb{padding:8px 8px 10px;margin-bottom:8px}
+body.sre-building .kb-key{height:22px;font-size:10px}
+body.sre-building .kb-row{margin-top:4px}
+body.sre-building canvas#scene{height:190px}
+body.sre-building .kb-row:first-child{display:none}
+body.sre-building .kb-key{height:20px}
+body.sre-building .leave-warn{padding:8px 12px;font-size:12px;margin-bottom:8px}
+body.sre-building .nav{padding-top:8px;padding-bottom:8px}
+body.sre-building .stage{margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -450,6 +470,7 @@ details.alt[open] summary{margin-bottom:12px}
   </section>
 
 
+  <div class="leave-warn hidden" id="leaveWarn"><i>⚠️</i><span>Don't leave or close this page until your Smart Reply Engine is built.</span></div>
   <!-- Free AI assistant page: the assistant being written, line by line, while the agents build it. -->
   <section class="hidden" id="codePanel">
     <div class="code" aria-label="Your assistant being coded live">
@@ -605,13 +626,13 @@ details.alt[open] summary{margin-bottom:12px}
       <h3><span class="num">2</span><span id="dSetupTitle">Your Tech Automation Setup</span></h3>
       <span class="when">● SUNDAY · 8:00 PM WAT · LIVE</span>
       <p>We connect your Smart Reply Engine to <b>Selar</b> together, step by step, so it sells your products and collects payment for you <b>while you sleep</b>. Save this meeting link:</p>
-      <div class="linkbox"><button class="copy" data-copy="https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday">https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday <em>Copy</em></button></div>
+      <div class="linkbox"><button class="copy" id="dMeet" data-copy="https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday">https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday <em>Copy</em></button></div>
       <a class="btn tinted" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Tech%20Automation%20Setup%20(EEM26)&amp;details=Meeting%20link%3A%20https%3A%2F%2Fecosystemexpantion.github.io%2FGoogle-Meet%2Fclass.html%3Fe%3Dsunday&amp;recur=RRULE%3AFREQ%3DWEEKLY%3BBYDAY%3DSU&amp;ctz=Africa%2FLagos&amp;dates=20261108T200000%2F20261108T213000" target="_blank" rel="noopener">Add to my calendar</a>
     </div>
     <div class="done-step">
-      <h3><span class="num">3</span>Get your reminders</h3>
-      <p>Join the WhatsApp group so you don't miss Sunday. I post the reminders and the meeting link there.</p>
-      <a class="btn wa" href="https://chat.whatsapp.com/I57zC0RWR8IC9Mu4kOMI52" target="_blank" rel="noopener">Join the WhatsApp group</a>
+      <h3><span class="num">3</span>Get a personal coach</h3>
+      <p>Want me to guide you one-on-one until your Smart Reply Engine is bringing in sales? Message me directly on WhatsApp.</p>
+      <a class="btn wa" id="dCoach" href="https://wa.me/2349053612325?text=Hi%20Coach%20Victor%2C%20I%20want%20a%20personal%20coach." target="_blank" rel="noopener">Get a personal coach</a>
     </div>
   </section>
 
@@ -663,7 +684,7 @@ details.alt[open] summary{margin-bottom:12px}
   }
   var SESSION = null;
   try { SESSION = localStorage.getItem("eem26-session"); } catch (e) {}
-  var SPEED = Math.max(0.05, Math.min(1, parseFloat(params.get("speed")) || 1));
+  var SPEED = Math.max(0.05, Math.min(1, parseFloat(params.get("speed")) || (params.has("sre") ? 0.45 : 1)));
 
   // Icons: Lucide v1.59.0 (https://github.com/lucide-icons/lucide), ISC License.
   var ICON_SVG = {"key-round":"<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\" /> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />","plug-zap":"<path d=\"M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z\" /> <path d=\"m2 22 3-3\" /> <path d=\"M7.5 13.5 10 11\" /> <path d=\"M10.5 16.5 13 14\" /> <path d=\"m18 3-4 4h6l-4 4\" />","pen-line":"<path d=\"M13 21h8\" /> <path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" />","brain-circuit":"<path d=\"M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z\" /> <path d=\"M9 13a4.5 4.5 0 0 0 3-4\" /> <path d=\"M6.003 5.125A3 3 0 0 0 6.401 6.5\" /> <path d=\"M3.477 10.896a4 4 0 0 1 .585-.396\" /> <path d=\"M6 18a4 4 0 0 1-1.967-.516\" /> <path d=\"M12 13h4\" /> <path d=\"M12 18h6a2 2 0 0 1 2 2v1\" /> <path d=\"M12 8h8\" /> <path d=\"M16 8V5a2 2 0 0 1 2-2\" /> <circle cx=\"16\" cy=\"13\" r=\".5\" /> <circle cx=\"18\" cy=\"3\" r=\".5\" /> <circle cx=\"20\" cy=\"21\" r=\".5\" /> <circle cx=\"20\" cy=\"8\" r=\".5\" />","messages-square":"<path d=\"M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\" /> <path d=\"M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1\" />","activity":"<path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\" />","rocket":"<path d=\"M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5\" /> <path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09\" /> <path d=\"M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z\" /> <path d=\"M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05\" />","git-fork":"<circle cx=\"12\" cy=\"18\" r=\"3\" /> <circle cx=\"6\" cy=\"6\" r=\"3\" /> <circle cx=\"18\" cy=\"6\" r=\"3\" /> <path d=\"M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9\" /> <path d=\"M12 12v3\" />","folder-git-2":"<path d=\"M18 19a5 5 0 0 1-5-5v8\" /> <path d=\"M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5\" /> <circle cx=\"13\" cy=\"12\" r=\"2\" /> <circle cx=\"20\" cy=\"19\" r=\"2\" />","folder-git":"<circle cx=\"12\" cy=\"13\" r=\"2\" /> <path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\" /> <path d=\"M14 13h3\" /> <path d=\"M7 13h3\" />","layout-template":"<rect width=\"18\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"9\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" /> <rect width=\"5\" height=\"7\" x=\"16\" y=\"14\" rx=\"1\" />","gem":"<path d=\"M10.5 3 8 9l4 13 4-13-2.5-6\" /> <path d=\"M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z\" /> <path d=\"M2 9h20\" />","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /> <path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />","radio-tower":"<path d=\"M4.9 16.1C1 12.2 1 5.8 4.9 1.9\" /> <path d=\"M7.8 4.7a6.14 6.14 0 0 0-.8 7.5\" /> <circle cx=\"12\" cy=\"9\" r=\"2\" /> <path d=\"M16.2 4.8c2 2 2.26 5.11.8 7.47\" /> <path d=\"M19.1 1.9a9.96 9.96 0 0 1 0 14.1\" /> <path d=\"M9.5 18h5\" /> <path d=\"m8 22 4-11 4 11\" />","satellite-dish":"<path d=\"M18 12a6 6 0 00-6-6\" /> <path d=\"M2.824 10.459a8 8 0 0010.717 10.717c.558-.276.623-1.012.183-1.452l-9.448-9.448c-.44-.44-1.176-.375-1.452.183\" /> <path d=\"M22 12A10 10 0 0012 2\" /> <path d=\"m9 15 4-4\" />","scan-search":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" /> <path d=\"m16 16-1.9-1.9\" />","cloud-upload":"<path d=\"M12 13v8\" /> <path d=\"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242\" /> <path d=\"m8 17 4-4 4 4\" />","scan-eye":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"1\" /> <path d=\"M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0\" />","scale":"<path d=\"M12 3v18\" /> <path d=\"m19 8 3 8a5 5 0 0 1-6 0zV7\" /> <path d=\"M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1\" /> <path d=\"m5 8 3 8a5 5 0 0 1-6 0zV7\" /> <path d=\"M7 21h10\" />","message-square-text":"<path d=\"M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z\" /> <path d=\"M7 11h10\" /> <path d=\"M7 15h6\" /> <path d=\"M7 7h8\" />","pen-tool":"<path d=\"m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18\" /> <path d=\"M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z\" /> <path d=\"m3 3 6.586 6.586\" /> <circle cx=\"11\" cy=\"11\" r=\"2\" />","badge-check":"<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <path d=\"m16 9-5.5 5.5L8 12\" />","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />","database":"<ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\" /> <path d=\"M3 5V19A9 3 0 0 0 21 19V5\" /> <path d=\"M3 12A9 3 0 0 0 21 12\" />","bot":"<path d=\"M12 8V4H8\" /> <rect width=\"16\" height=\"12\" x=\"4\" y=\"8\" rx=\"2\" /> <path d=\"M2 14h2\" /> <path d=\"M20 14h2\" /> <path d=\"M15 13v2\" /> <path d=\"M9 13v2\" />","globe":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\" /> <path d=\"M2 12h20\" />","graduation-cap":"<path d=\"M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z\" /> <path d=\"M22 10v6\" /> <path d=\"M6 12.5V16a6 3 0 0 0 12 0v-3.5\" />","hourglass":"<path d=\"M5 22h14\" /> <path d=\"M5 2h14\" /> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\" /> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\" />","mail-check":"<path d=\"M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8\" /> <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\" /> <path d=\"m16 19 2 2 4-4\" />","signature":"<path d=\"m21 17-2.156-1.868A.5.5 0 0 0 18 15.5v.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1c0-2.545-3.991-3.97-8.5-4a1 1 0 0 0 0 5c4.153 0 4.745-11.295 5.708-13.5a2.5 2.5 0 1 1 3.31 3.284\" /> <path d=\"M3 21h18\" />","camera":"<path d=\"M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />","circle-check":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"m16 9-5.5 5.5L8 12\" />","sparkles":"<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\" /> <path d=\"M20 2v4\" /> <path d=\"M22 4h-4\" /> <circle cx=\"4\" cy=\"20\" r=\"2\" />","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\" /> <path d=\"M12 22V12\" /> <polyline points=\"3.29 7 12 12 20.71 7\" /> <path d=\"m7.5 4.27 9 5.15\" />"};
@@ -2156,9 +2177,9 @@ details.alt[open] summary{margin-bottom:12px}
       if (ci < f.text.length) {
         var ch = f.text[ci]; ci++;
         render(); kbPress(ch);
-        timer = setTimeout(step, ch === "\n" ? 140 : ch === " " ? 18 : 26 + Math.random() * 30);
+        timer = setTimeout(step, ch === "\n" ? 60 : ch === " " ? 8 : 10 + Math.random() * 14);
       } else if (fi < files.length - 1) {
-        timer = setTimeout(function () { fi++; ci = 0; render(); step(); }, 700);
+        timer = setTimeout(function () { fi++; ci = 0; render(); step(); }, 300);
       } else if (mode === "preview") {
         timer = setTimeout(function () { fi = 0; ci = 0; step(); }, 3500);
       } else {
@@ -2226,7 +2247,9 @@ details.alt[open] summary{margin-bottom:12px}
       .forEach(function (id) { vis(id, false); });
     vis("sreStart", step === "start");
     vis("sreDone", step === "done");
-    ["stagePanel", "agents", "consolePanel", "footNote"].forEach(function (id) { vis(id, step === "building"); });
+    vis("stagePanel", step === "building"); vis("leaveWarn", step === "building");
+    ["agents", "consolePanel", "footNote"].forEach(function (id) { vis(id, false); });
+    document.body.classList.toggle("sre-building", step === "building");
     heroFor(step, d);
     if (step === "building") code.start("live", (d && d.sre && (d.sre.name || d.sre.suggestedName)) || "", (d && d.firstName) || "");
     else if (step === "done") { code.hide(); }
@@ -2262,7 +2285,23 @@ details.alt[open] summary{margin-bottom:12px}
     }
     sreShow("building", d);
   }
+  // Coach number, message and meeting link, as set in the OmniReach app (Pages → Edit page).
   if (SRE_ONLY) {
+    fetch("https://leqizarzgfpiriknpnxw.supabase.co/functions/v1/omnireach?action=page&page=eem26").then(function (r) { return r.json(); }).then(function (p) {
+      if (!p || !p.ok) return;
+      if (p.coach_whatsapp) {
+        var msg = p.coach_message || "Hi Coach Victor, I want a personal coach.";
+        $("dCoach").href = "https://wa.me/" + String(p.coach_whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(msg);
+      }
+      if (p.class_link) { $("dMeet").dataset.copy = p.class_link; $("dMeet").innerHTML = esc(p.class_link) + " <em>Copy</em>"; }
+    }).catch(function () {});
+  }
+  if (SRE_ONLY) {
+    window.addEventListener("beforeunload", function (e) {
+      if (sre.step !== "building") return;
+      e.preventDefault(); e.returnValue = "Your Smart Reply Engine is still being built. Leave anyway?";
+      return e.returnValue;
+    });
     $("sreCgBtn").addEventListener("click", function () { vis("sreCg", false); window.scrollTo({ top: 0, behavior: "smooth" }); });
     $("s1Login").addEventListener("click", function () { vis("sreStart", false); vis("authPanel", true); authTab(false); });
     $("s1Btn").addEventListener("click", function () {
