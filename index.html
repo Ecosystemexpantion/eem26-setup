@@ -545,6 +545,9 @@ details.alt[open] summary{margin-bottom:12px}
   var BUYER_PAGE = false;
   var params = new URLSearchParams(location.search);
   var KEY = params.get("k");
+  // The free gift link (/sre/ redirects here with ?sre=1): only the AI sales assistant, no Days 2-4, no Tech Stack.
+  var SRE_ONLY = params.has("sre");
+  if (SRE_ONLY) document.title = "Your free AI Sales Assistant · EEM26";
   var SESSION = null;
   try { SESSION = localStorage.getItem("eem26-session"); } catch (e) {}
   var SPEED = Math.max(0.05, Math.min(1, parseFloat(params.get("speed")) || 1));
@@ -1538,19 +1541,23 @@ details.alt[open] summary{margin-bottom:12px}
     } else if (kindOf(run) === "sreWeb") {
       finIcon("bot", C.green);
       $("finTitle").textContent = (run.bot_username || "Your assistant") + " is live";
-      $("finText").textContent = data && data.phase === "bot_live"
+      $("finText").textContent = SRE_ONLY
+        ? "Your AI Sales Assistant is ready. Share your chat link everywhere — it answers every buyer instantly and guides them to pay, 24/7."
+        : data && data.phase === "bot_live"
         ? "Day 1 is complete! Share your chat link everywhere. Day 2 unlocks as soon as you get your Tech Stack and upload your payment screenshot."
         : "Anyone who opens your chat link gets an intelligent reply and is guided to buy — 24/7.";
       if (data && data.sre && data.sre.chatUrl) { $("finBtn").href = data.sre.chatUrl; $("finBtn").textContent = "Open my assistant"; vis("finBtn", true); }
-      if (data && data.phase === "bot_live") { $("finBtn2").href = data.techStackUrl; $("finBtn2").textContent = "Unlock Day 2 — get the Tech Stack"; vis("finBtn2", true); }
+      if (!SRE_ONLY && data && data.phase === "bot_live") { $("finBtn2").href = data.techStackUrl; $("finBtn2").textContent = "Unlock Day 2 — get the Tech Stack"; vis("finBtn2", true); }
     } else if (run.kind === "sre") {
       finIcon("bot", C.green);
       $("finTitle").textContent = "@" + run.bot_username + " is live";
-      $("finText").textContent = data && data.phase === "bot_live"
+      $("finText").textContent = SRE_ONLY
+        ? "Your AI Sales Assistant is live on Telegram. Anyone who messages it gets an instant reply and is guided to buy, 24/7."
+        : data && data.phase === "bot_live"
         ? "Day 1 is complete! Day 2 unlocks as soon as you get your Tech Stack and upload your payment screenshot here."
         : "Anyone who messages it gets an intelligent reply and is guided to buy — 24/7.";
       $("finBtn").href = "https://t.me/" + run.bot_username; $("finBtn").textContent = "Open @" + run.bot_username; vis("finBtn", true);
-      if (data && data.phase === "bot_live") { $("finBtn2").href = data.techStackUrl; $("finBtn2").textContent = "Unlock Day 2 — get the Tech Stack"; vis("finBtn2", true); }
+      if (!SRE_ONLY && data && data.phase === "bot_live") { $("finBtn2").href = data.techStackUrl; $("finBtn2").textContent = "Unlock Day 2 — get the Tech Stack"; vis("finBtn2", true); }
     } else if (run.kind === "pages") {
       var url = ((last && last.text) || "").match(/https?:\/\/\S+/);
       finIcon("globe", C.green);
@@ -1658,7 +1665,7 @@ details.alt[open] summary{margin-bottom:12px}
   function apply(d) {
     data = d;
     var name = d.firstName ? esc(d.firstName) : "there", run = d.run, web = webOnly();
-    vis("authPanel", false); vis("journey", true); vis("logoutBtn", !KEY);
+    vis("authPanel", false); vis("journey", !SRE_ONLY); vis("logoutBtn", !KEY);
     DEST.check = DEST.certificate = web ? "YOUR PAGE" : "TELEGRAM";
     renderJourney(d.phase, d.day);
     $("bfName").innerHTML = esc(d.botfather.displayName) + " <em>Copy</em>"; $("bfName").dataset.copy = d.botfather.displayName;
@@ -1696,19 +1703,19 @@ details.alt[open] summary{margin-bottom:12px}
     // Tech Stack: unpacked once per account (in this browser) as soon as the student owns it, before that day's setup.
     var owns = ownsStack(d);
     stack.key = "eem26-stack-" + ((d.account && d.account.email) || d.fullName || "student");
-    if (owns && stack.state === "") {
+    if (owns && stack.state === "" && !SRE_ONLY) {
       var unpacked = false;
       try { unpacked = !!localStorage.getItem(stack.key); } catch (e) {}
       if (unpacked) stack.state = "done"; else if (!busy) unpackStack();
     }
-    vis("stackPanel", owns && stack.state !== "");
+    vis("stackPanel", !SRE_ONLY && owns && stack.state !== "");
     renderStack();
     var unpacking = stack.state === "playing";
     vis("buildPanel", d.phase === "build_bot" && !busy && !unpacking);
-    vis("pagesPanel", (d.phase === "build_pages") && !busy && !unpacking);
+    vis("pagesPanel", !SRE_ONLY && (d.phase === "build_pages") && !busy && !unpacking);
     if (d.githubConnectUrl) $("ghBtn").href = d.githubConnectUrl;
-    vis("day3Panel", d.phase === "day3_start" && !busy && !unpacking);
-    vis("testPanel", !!d.canTestSre && !busy && !waiting && !unpacking);
+    vis("day3Panel", !SRE_ONLY && d.phase === "day3_start" && !busy && !unpacking);
+    vis("testPanel", !SRE_ONLY && !!d.canTestSre && !busy && !waiting && !unpacking);
 
     var chat = d.sre && d.sre.chatUrl;
     vis("srePanel", !!chat && !busy);
@@ -1721,7 +1728,7 @@ details.alt[open] summary{margin-bottom:12px}
       renderLeads(d.leads);
     }
 
-    var up = d.upload && !busy && !waiting && !unpacking ? UPLOAD_STEPS[d.upload.label] : null;
+    var up = !SRE_ONLY && d.upload && !busy && !waiting && !unpacking ? UPLOAD_STEPS[d.upload.label] : null;
     vis("uploadPanel", !!up);
     if (up) {
       $("upTitle").textContent = up[0];
@@ -1735,6 +1742,7 @@ details.alt[open] summary{margin-bottom:12px}
     vis("compose", !!d.canMessage);
     vis("infoPanel", false);
     vis("infoTg", !web);
+    if (SRE_ONLY) $("buildPanel").querySelector("h2").textContent = "Your free AI Sales Assistant";
 
     if (busy) {
       $("hello").innerHTML = "Hi " + name + " — <span>your team is on it</span>";
@@ -1748,6 +1756,9 @@ details.alt[open] summary{margin-bottom:12px}
     } else if (d.phase === "build_bot") {
       $("hello").innerHTML = "Hi " + name + " — <span>let's build your AI sales assistant</span>";
       $("status").textContent = "Name your assistant, tap Build, and watch 7 AI agents set it up for you live.";
+    } else if (SRE_ONLY && d.sre && d.sre.chatUrl) {
+      $("hello").innerHTML = "Hi " + name + " — <span>your assistant is live</span>";
+      $("status").textContent = "It's replying and selling for you 24/7. Put your chat link in your WhatsApp status, your bio and every post — every person who taps it gets an instant answer.";
     } else if (d.phase === "bot_live") {
       $("hello").innerHTML = "Hi " + name + " — <span>Day 1 complete</span>";
       $("status").textContent = paySent()
@@ -1960,8 +1971,15 @@ details.alt[open] summary{margin-bottom:12px}
     stack.token++; stack.state = ""; stack.open = false; stack.use = null;
     ["buildPanel", "pagesPanel", "day3Panel", "uploadPanel", "srePanel", "testPanel", "msgPanel", "infoPanel", "finale", "journey", "stackPanel", "logoutBtn"].forEach(function (id) { vis(id, false); });
     vis("authPanel", true);
-    $("hello").innerHTML = "Set up your business <span>in 4 days</span>";
-    $("status").textContent = "Create your free account and watch AI agents build your sales assistant, your sales pages and your stores — live.";
+    if (SRE_ONLY) {
+      $("hello").innerHTML = "Your free <span>AI Sales Assistant</span>";
+      var certNote = $("upForm").querySelector('label[for="suName"] span'); if (certNote) certNote.textContent = "";
+      var amaraHint = $("upForm").querySelector(".hint"); if (amaraHint) amaraHint.textContent = "Free. No card, no Telegram, no code — it works from your phone.";
+      $("status").textContent = "It replies to your buyers in seconds, answers their questions and walks them to payment — day and night, even while you sleep. Create your free account, name it, and watch 7 AI agents build it for you live.";
+    } else {
+      $("hello").innerHTML = "Set up your business <span>in 4 days</span>";
+      $("status").textContent = "Create your free account and watch AI agents build your sales assistant, your sales pages and your stores — live.";
+    }
     authErr(msg && !/log in again/i.test(msg) ? msg : "");
   }
   function authErr(msg) { $("authErr").textContent = msg || ""; vis("authErr", !!msg); }
