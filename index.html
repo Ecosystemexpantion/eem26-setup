@@ -2292,7 +2292,7 @@ body.sre-building .stage{margin-bottom:8px}
       // One button only: the build starts as soon as the account exists.
       sre.autoBuilt = true; pendingSince = Date.now();
       sreShow("building", d);
-      post({ action: "build_sre", name: (d.sre && d.sre.suggestedName) || ((d.firstName || "My") + " Assistant") }).then(function (res) {
+      post({ action: "build_sre", demo: true, name: (d.sre && d.sre.suggestedName) || ((d.firstName || "My") + " Assistant") }).then(function (res) {
         if (!res.ok) { pendingSince = 0; $("status").textContent = res.j.error || "Something went wrong. Refresh the page to try again."; }
         load();
       }).catch(function () { pendingSince = 0; $("status").textContent = "Couldn't connect. Check your internet and refresh the page."; });
