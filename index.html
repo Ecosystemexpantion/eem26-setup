@@ -1521,7 +1521,10 @@ body.sre-building .stage{margin-bottom:8px}
     $("hudWho").innerHTML = a ? esc(a.name) + "<span>" + esc(a.role) + "</span>" : "EEM26 Core<span>online</span>";
     $("hudWhat").innerHTML = what;
   }
-  function progress(n, total, label) { $("bar").style.width = Math.round(n / total * 100) + "%"; $("stageNote").textContent = label; }
+  function progress(n, total, label) {
+    $("bar").style.width = Math.round(n / total * 100) + "%"; $("stageNote").textContent = label;
+    if (SRE_ONLY && typeof code !== "undefined" && total > 1) code.setTarget(n >= total ? 1 : (n + 0.95) / total);
+  }
 
   function waitForAgent(agentId, tk) {
     return new Promise(function (resolve) {
@@ -2104,6 +2107,10 @@ body.sre-building .stage{margin-bottom:8px}
   // A typed-out view of the assistant's setup, shown as a preview before sign-up and live while the agents build it.
   var code = (function () {
     var timer = null, files = [], fi = 0, ci = 0, mode = "", names = { bot: "", owner: "" };
+    // Live mode types only as far as the agents have got (target = share of agents done), so both finish together.
+    var target = 1;
+    function typedSoFar() { var n = ci; for (var i = 0; i < fi; i++) n += files[i].text.length; return n; }
+    function totalChars() { return files.reduce(function (a, f) { return a + f.text.length; }, 0); }
     var KW = /\b(import|from|const|new|await|async|return|if|export|true|false)\b/g;
     function esc2(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     function hl(src) {
@@ -2174,10 +2181,16 @@ body.sre-building .stage{margin-bottom:8px}
     }
     function step() {
       var f = files[fi];
+      if (mode === "live" && typedSoFar() >= Math.floor(totalChars() * target) - 1) {
+        timer = setTimeout(step, 120); // wait for the next agent; the cursor keeps blinking
+        return;
+      }
       if (ci < f.text.length) {
         var ch = f.text[ci]; ci++;
         render(); kbPress(ch);
-        timer = setTimeout(step, ch === "\n" ? 60 : ch === " " ? 8 : 10 + Math.random() * 14);
+        // Behind the agents (e.g. the last one just finished)? Catch up quickly so both end together.
+        var behind = mode === "live" && Math.floor(totalChars() * target) - typedSoFar() > 60;
+        timer = setTimeout(step, behind ? 4 : ch === "\n" ? 110 : ch === " " ? 20 : 26 + Math.random() * 22);
       } else if (fi < files.length - 1) {
         timer = setTimeout(function () { fi++; ci = 0; render(); step(); }, 300);
       } else if (mode === "preview") {
@@ -2190,7 +2203,7 @@ body.sre-building .stage{margin-bottom:8px}
       start: function (m, bot, owner) {
         if (mode === m && (timer || m === "live")) return;
         clearTimeout(timer); mode = m; names = { bot: bot || "", owner: owner || "" };
-        files = build(); fi = 0; ci = 0;
+        files = build(); fi = 0; ci = 0; target = m === "live" ? 0.12 : 1;
         $("codeState").textContent = "● Building";
         vis("codeLive", true);
         $("codeTitle").textContent = (bot ? bot.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "smart-reply-engine");
@@ -2206,6 +2219,8 @@ body.sre-building .stage{margin-bottom:8px}
         $("codeState").innerHTML = '<span class="ok">✓ Live</span>'; vis("codeLive", false);
         $("codeCap").textContent = "Done. Your assistant is live and replying.";
       },
+      // Called with the agents' progress (0–1).
+      setTarget: function (frac) { target = Math.max(target, Math.min(1, frac)); },
       hide: function () { clearTimeout(timer); timer = null; mode = ""; vis("codePanel", false); }
     };
   })();
