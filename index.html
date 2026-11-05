@@ -632,7 +632,7 @@ body.sre-building .stage{margin-bottom:8px}
     <div class="done-step">
       <h3><span class="num">3</span>Get a personal coach</h3>
       <p>Want me to guide you one-on-one until your Smart Reply Engine is bringing in sales? Message me directly on WhatsApp.</p>
-      <a class="btn wa" id="dCoach" href="https://wa.me/2349053612325?text=Hi%20Coach%20Victor%2C%20I%20want%20a%20personal%20coach." target="_blank" rel="noopener">Get a personal coach</a>
+      <a class="btn wa" id="dCoach" href="https://wa.me/2349053612325?text=Hi%20EEM26%2C%20I%20want%20a%20personal%20coach." target="_blank" rel="noopener">Get a personal coach</a>
     </div>
   </section>
 
@@ -2290,7 +2290,7 @@ body.sre-building .stage{margin-bottom:8px}
     fetch("https://leqizarzgfpiriknpnxw.supabase.co/functions/v1/omnireach?action=page&page=eem26").then(function (r) { return r.json(); }).then(function (p) {
       if (!p || !p.ok) return;
       if (p.coach_whatsapp) {
-        var msg = p.coach_message || "Hi Coach Victor, I want a personal coach.";
+        var msg = p.coach_message || "Hi EEM26, I want a personal coach.";
         $("dCoach").href = "https://wa.me/" + String(p.coach_whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(msg);
       }
       if (p.class_link) { $("dMeet").dataset.copy = p.class_link; $("dMeet").innerHTML = esc(p.class_link) + " <em>Copy</em>"; }
