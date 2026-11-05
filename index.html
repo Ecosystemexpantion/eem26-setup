@@ -1974,6 +1974,7 @@ details.alt[open] summary{margin-bottom:12px}
     if (SRE_ONLY) {
       $("hello").innerHTML = "Your free <span>AI Sales Assistant</span>";
       var certNote = $("upForm").querySelector('label[for="suName"] span'); if (certNote) certNote.textContent = "";
+      var phoneLabel = $("upForm").querySelector('label[for="suPhone"]'); if (phoneLabel) phoneLabel.innerHTML = 'WhatsApp number <span style="color:var(--label3)">(optional)</span>';
       var amaraHint = $("upForm").querySelector(".hint"); if (amaraHint) amaraHint.textContent = "Free. No card, no Telegram, no code — it works from your phone.";
       $("status").textContent = "It replies to your buyers in seconds, answers their questions and walks them to payment — day and night, even while you sleep. Create your free account, name it, and watch 7 AI agents build it for you live.";
     } else {
@@ -2014,8 +2015,19 @@ details.alt[open] summary{margin-bottom:12px}
   $("suBtn").addEventListener("click", function () {
     authCall($("suBtn"), "Create my account", {
       action: "signup", name: $("suName").value, email: $("suEmail").value.trim(), phone: $("suPhone").value, country: $("suCountry").value, password: $("suPass").value
-    }, signedIn);
+    }, function (res) { if (SRE_ONLY) captureLead(); signedIn(res); });
   });
+  // On the free AI assistant page, a new account also registers the person for the Sunday training (OmniReach sends
+  // their joining link and reminders). Fire-and-forget: it never blocks or breaks the sign-up.
+  function captureLead() {
+    try {
+      var body = new URLSearchParams({
+        page: "eem26", source: "sre-gift", name: $("suName").value.trim(), email: $("suEmail").value.trim(),
+        phone: $("suPhone").value.trim(), country: $("suCountry").value.trim()
+      });
+      fetch("https://leqizarzgfpiriknpnxw.supabase.co/functions/v1/omnireach", { method: "POST", body: body, keepalive: true }).catch(function () {});
+    } catch (e) {}
+  }
   $("liBtn").addEventListener("click", function () {
     authCall($("liBtn"), "Log in", { action: "login", email: $("liEmail").value.trim(), password: $("liPass").value }, signedIn);
   });
