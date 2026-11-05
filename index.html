@@ -362,6 +362,7 @@ details.alt[open] summary{margin-bottom:12px}
     <p id="status">Connecting…</p>
   </section>
 
+
   <section class="panel glass hidden" id="authPanel">
     <div class="tabs"><button id="tabUp" class="on">Create account</button><button id="tabIn">Log in</button></div>
     <div id="upForm">
@@ -520,6 +521,17 @@ details.alt[open] summary{margin-bottom:12px}
     </div>
   </div>
 
+  <!-- Free AI assistant page only: the Sunday meeting and the updates group. -->
+  <section class="panel glass hidden" id="sundayPanel">
+    <h2>📌 Save this meeting link</h2>
+    <p class="lead"><b>Sunday, 8:00 PM (WAT)</b>, live from your phone. I'll connect your AI Sales Assistant to <b>Selar</b> with you, so it sells your products and collects payment <b>while you sleep</b>. No long lecture: we set it up together, step by step.</p>
+    <div class="linkbox"><button class="copy" data-copy="https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday">https://ecosystemexpantion.github.io/Google-Meet/class.html?e=sunday <em>Copy</em></button></div>
+    <div class="share">
+      <a class="btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=EEM26%3A%20Connect%20my%20AI%20Sales%20Assistant%20to%20Selar&amp;details=Meeting%20link%3A%20https%3A%2F%2Fecosystemexpantion.github.io%2FGoogle-Meet%2Fclass.html%3Fe%3Dsunday&amp;recur=RRULE%3AFREQ%3DWEEKLY%3BBYDAY%3DSU&amp;ctz=Africa%2FLagos&amp;dates=20261108T200000%2F20261108T213000" target="_blank" rel="noopener">Add to my calendar</a>
+      <a class="btn tinted" href="https://chat.whatsapp.com/I57zC0RWR8IC9Mu4kOMI52" target="_blank" rel="noopener">Join the WhatsApp group for updates</a>
+    </div>
+  </section>
+
   <section class="stage glass">
     <div class="stage-top"><h2 id="stageTitle">Your AI agents</h2><small id="stageNote">Standing by</small></div>
     <div class="bar"><i id="bar"></i></div>
@@ -548,6 +560,11 @@ details.alt[open] summary{margin-bottom:12px}
   // The free gift link (/sre/ redirects here with ?sre=1): only the AI sales assistant, no Days 2-4, no Tech Stack.
   var SRE_ONLY = params.has("sre");
   if (SRE_ONLY) document.title = "Your free AI Sales Assistant · EEM26";
+  if (SRE_ONLY) {
+    document.getElementById("sundayPanel").classList.remove("hidden");
+    // Keep the free page on what matters: build the assistant, then Sunday.
+    var tgAlt = document.getElementById("tgAlt"); if (tgAlt) tgAlt.style.display = "none";
+  }
   var SESSION = null;
   try { SESSION = localStorage.getItem("eem26-session"); } catch (e) {}
   var SPEED = Math.max(0.05, Math.min(1, parseFloat(params.get("speed")) || 1));
@@ -1542,7 +1559,7 @@ details.alt[open] summary{margin-bottom:12px}
       finIcon("bot", C.green);
       $("finTitle").textContent = (run.bot_username || "Your assistant") + " is live";
       $("finText").textContent = SRE_ONLY
-        ? "Your AI Sales Assistant is ready. Share your chat link everywhere — it answers every buyer instantly and guides them to pay, 24/7."
+        ? "It's alive! Open it and chat with it like a customer, you'll see. Now the best part: on Sunday at 8PM I'll connect it to Selar with you, so it sells for you and collects payment while you sleep. Save the meeting link below 👇"
         : data && data.phase === "bot_live"
         ? "Day 1 is complete! Share your chat link everywhere. Day 2 unlocks as soon as you get your Tech Stack and upload your payment screenshot."
         : "Anyone who opens your chat link gets an intelligent reply and is guided to buy — 24/7.";
@@ -1724,7 +1741,7 @@ details.alt[open] summary{margin-bottom:12px}
       $("sreLink").innerHTML = esc(chat) + " <em>Copy</em>"; $("sreLink").dataset.copy = chat;
       $("sreOpen").href = chat;
       $("sreWa").href = "https://wa.me/?text=" + encodeURIComponent("Chat with me here 👉 " + chat);
-      vis("tgAdd", !d.sre.telegram);
+      vis("tgAdd", !SRE_ONLY && !d.sre.telegram);
       renderLeads(d.leads);
     }
 
@@ -1738,7 +1755,7 @@ details.alt[open] summary{margin-bottom:12px}
     }
     vis("upHint", !web);
     vis("upOk", d.upload && d.upload.label === "Payment screenshot" && paySent());
-    vis("msgPanel", web);
+    vis("msgPanel", web && !SRE_ONLY);
     vis("compose", !!d.canMessage);
     vis("infoPanel", false);
     vis("infoTg", !web);
@@ -1758,7 +1775,7 @@ details.alt[open] summary{margin-bottom:12px}
       $("status").textContent = "Name your assistant, tap Build, and watch 7 AI agents set it up for you live.";
     } else if (SRE_ONLY && d.sre && d.sre.chatUrl) {
       $("hello").innerHTML = "Hi " + name + " — <span>your assistant is live</span>";
-      $("status").textContent = "It's replying and selling for you 24/7. Put your chat link in your WhatsApp status, your bio and every post — every person who taps it gets an instant answer.";
+      $("status").textContent = "It already answers every buyer instantly. On Sunday at 8PM I'll connect it to Selar with you, so it makes you money while you sleep. Save the meeting link and join the group below.";
     } else if (d.phase === "bot_live") {
       $("hello").innerHTML = "Hi " + name + " — <span>Day 1 complete</span>";
       $("status").textContent = paySent()
